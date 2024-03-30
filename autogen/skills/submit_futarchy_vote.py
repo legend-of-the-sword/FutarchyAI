@@ -12,11 +12,11 @@ Prerequisites:
   - CONTRACT_ADDRESS: The address of the deployed Futarchy Prediction Market contract.
 
 Inputs:
-- question_id: The ID of the prediction market question.
+- question_index: The index of the prediction market question.
 - decision: The decision to vote for (0 for Yes, 1 for No).
 
 Example Usage:
-submit_vote(1, 0)  # Vote "Yes" for question with ID 1
+submit_vote(0, 0)  # Vote "Yes" for the first question
 """
 
 import os
@@ -24,7 +24,7 @@ from web3 import Web3, HTTPProvider
 from eth_account import Account
 
 
-def submit_vote(question_id, decision):
+def submit_vote(question_index, decision):
     # Set up web3 connection
     infura_api_key = os.getenv("INFURA_API_KEY")
     rpc_url = f"https://sepolia.infura.io/v3/{infura_api_key}"
@@ -38,18 +38,80 @@ def submit_vote(question_id, decision):
     contract_address = os.getenv("CONTRACT_ADDRESS")
 
     # Load the contract ABI (replace with your actual ABI)
-    contract_abi = [...]
+    contract_abi = [
+        {
+            "inputs": [
+                {"internalType": "string", "name": "_question", "type": "string"},
+                {"internalType": "uint256", "name": "_duration", "type": "uint256"},
+            ],
+            "name": "createQuestion",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function",
+        },
+        {
+            "inputs": [
+                {"internalType": "uint256", "name": "_questionIndex", "type": "uint256"}
+            ],
+            "name": "determineOutcome",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function",
+        },
+        {
+            "inputs": [],
+            "name": "getQuestionCount",
+            "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+            "stateMutability": "view",
+            "type": "function",
+        },
+        {
+            "inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+            "name": "questions",
+            "outputs": [
+                {"internalType": "string", "name": "text", "type": "string"},
+                {"internalType": "uint256", "name": "deadline", "type": "uint256"},
+                {
+                    "internalType": "enum FutarchyPredictionMarket.Decision",
+                    "name": "outcome",
+                    "type": "uint8",
+                },
+            ],
+            "stateMutability": "view",
+            "type": "function",
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "_questionIndex",
+                    "type": "uint256",
+                },
+                {
+                    "internalType": "enum FutarchyPredictionMarket.Decision",
+                    "name": "_decision",
+                    "type": "uint8",
+                },
+            ],
+            "name": "vote",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function",
+        },
+    ]
 
     # Create contract instance
     contract = w3.eth.contract(address=contract_address, abi=contract_abi)
 
     # Build transaction to submit a vote
-    submit_vote_txn = contract.functions.vote(question_id, decision).buildTransaction(
+    submit_vote_txn = contract.functions.vote(
+        question_index, decision
+    ).buildTransaction(
         {
             "from": agent_address,
             "nonce": w3.eth.get_transaction_count(agent_address),
             "gas": 100000,
-            "gasPrice": w3.toWei("20", "gwei"),
+            "gasPrice": w3.to_wei("20", "gwei"),
         }
     )
 

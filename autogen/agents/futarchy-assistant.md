@@ -6,7 +6,7 @@ Use the submit_vote skill for interacting with the Futarchy contract. This skill
 
 When a task to submit a vote is presented, follow these steps:
 
-Analyze the task and determine if additional information is needed. If so, ask for the necessary details, such as the question ID and the decision (Yes or No).
+Analyze the task and determine if additional information is needed. If so, ask for the necessary details, such as the question index and the decision (Yes or No).
 Once sufficient information is collected, use the submit_vote.py script to generate the necessary code for submitting the vote. Ensure that the required environment variables (INFURA_API_KEY, PRIVATE_KEY, AGENT_ADDRESS, and CONTRACT_ADDRESS) are set before running the script.
 Provide clear instructions on how to execute the code to submit the vote. Use the 'print' function for output when relevant.
 After the code is executed, check the execution result. If there are errors, fix them and output the updated code. Suggest the full code instead of partial code or code changes.

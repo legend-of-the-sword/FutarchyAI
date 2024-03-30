@@ -4,34 +4,43 @@ pragma solidity ^0.8.0;
 contract FutarchyPredictionMarket {
     enum Decision { Yes, No }
     
-    address public creator;
-    string public question;
-    uint256 public deadline;
-    mapping(Decision => uint256) public votes;
-    mapping(address => bool) public hasVoted;
-    Decision public outcome;
-
-    constructor(string memory _question, uint256 _duration) {
-        creator = msg.sender;
-        question = _question;
-        deadline = block.timestamp + _duration;
+    struct Question {
+        string text;
+        uint256 deadline;
+        mapping(Decision => uint256) votes;
+        mapping(address => bool) hasVoted;
+        Decision outcome;
     }
-
-    function vote(Decision _decision) public {
-        require(block.timestamp < deadline, "Voting period has ended");
-        require(!hasVoted[msg.sender], "Already voted");
-
-        votes[_decision] += 1;
-        hasVoted[msg.sender] = true;
+    
+    Question[] public questions;
+    
+    function createQuestion(string memory _question, uint256 _duration) public {
+        Question storage newQuestion = questions.push();
+        newQuestion.text = _question;
+        newQuestion.deadline = block.timestamp + _duration;
     }
-
-    function determineOutcome() public {
-        require(block.timestamp >= deadline, "Voting period has not ended");
+    
+    function vote(uint256 _questionIndex, Decision _decision) public {
+        Question storage question = questions[_questionIndex];
+        require(block.timestamp < question.deadline, "Voting period has ended");
+        require(!question.hasVoted[msg.sender], "Already voted");
         
-        if (votes[Decision.Yes] > votes[Decision.No]) {
-            outcome = Decision.Yes;
+        question.votes[_decision] += 1;
+        question.hasVoted[msg.sender] = true;
+    }
+    
+    function determineOutcome(uint256 _questionIndex) public {
+        Question storage question = questions[_questionIndex];
+        require(block.timestamp >= question.deadline, "Voting period has not ended");
+        
+        if (question.votes[Decision.Yes] > question.votes[Decision.No]) {
+            question.outcome = Decision.Yes;
         } else {
-            outcome = Decision.No;
+            question.outcome = Decision.No;
         }
+    }
+    
+    function getQuestionCount() public view returns (uint256) {
+        return questions.length;
     }
 }

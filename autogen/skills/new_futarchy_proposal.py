@@ -38,7 +38,67 @@ def create_question(question, duration):
     contract_address = os.getenv("CONTRACT_ADDRESS")
 
     # Load the contract ABI (replace with your actual ABI)
-    contract_abi = [...]
+    contract_abi = [
+        {
+            "inputs": [
+                {"internalType": "string", "name": "_question", "type": "string"},
+                {"internalType": "uint256", "name": "_duration", "type": "uint256"},
+            ],
+            "name": "createQuestion",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function",
+        },
+        {
+            "inputs": [
+                {"internalType": "uint256", "name": "_questionIndex", "type": "uint256"}
+            ],
+            "name": "determineOutcome",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function",
+        },
+        {
+            "inputs": [],
+            "name": "getQuestionCount",
+            "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+            "stateMutability": "view",
+            "type": "function",
+        },
+        {
+            "inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+            "name": "questions",
+            "outputs": [
+                {"internalType": "string", "name": "text", "type": "string"},
+                {"internalType": "uint256", "name": "deadline", "type": "uint256"},
+                {
+                    "internalType": "enum FutarchyPredictionMarket.Decision",
+                    "name": "outcome",
+                    "type": "uint8",
+                },
+            ],
+            "stateMutability": "view",
+            "type": "function",
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "_questionIndex",
+                    "type": "uint256",
+                },
+                {
+                    "internalType": "enum FutarchyPredictionMarket.Decision",
+                    "name": "_decision",
+                    "type": "uint8",
+                },
+            ],
+            "name": "vote",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function",
+        },
+    ]
 
     # Create contract instance
     contract = w3.eth.contract(address=contract_address, abi=contract_abi)
@@ -51,7 +111,7 @@ def create_question(question, duration):
             "from": deployer_address,
             "nonce": w3.eth.get_transaction_count(deployer_address),
             "gas": 100000,
-            "gasPrice": w3.toWei("20", "gwei"),
+            "gasPrice": w3.to_wei("20", "gwei"),
         }
     )
 
