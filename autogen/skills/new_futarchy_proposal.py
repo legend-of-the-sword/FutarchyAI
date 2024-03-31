@@ -22,6 +22,7 @@ create_question("Will the price of ETH exceed $3000 by the end of the year?", 36
 import os
 from web3 import Web3, HTTPProvider
 from eth_account import Account
+import json
 
 
 def create_question(question, duration):
@@ -38,67 +39,7 @@ def create_question(question, duration):
     contract_address = os.getenv("CONTRACT_ADDRESS")
 
     # Load the contract ABI (replace with your actual ABI)
-    contract_abi = [
-        {
-            "inputs": [
-                {"internalType": "string", "name": "_question", "type": "string"},
-                {"internalType": "uint256", "name": "_duration", "type": "uint256"},
-            ],
-            "name": "createQuestion",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function",
-        },
-        {
-            "inputs": [
-                {"internalType": "uint256", "name": "_questionIndex", "type": "uint256"}
-            ],
-            "name": "determineOutcome",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function",
-        },
-        {
-            "inputs": [],
-            "name": "getQuestionCount",
-            "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-            "stateMutability": "view",
-            "type": "function",
-        },
-        {
-            "inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-            "name": "questions",
-            "outputs": [
-                {"internalType": "string", "name": "text", "type": "string"},
-                {"internalType": "uint256", "name": "deadline", "type": "uint256"},
-                {
-                    "internalType": "enum FutarchyPredictionMarket.Decision",
-                    "name": "outcome",
-                    "type": "uint8",
-                },
-            ],
-            "stateMutability": "view",
-            "type": "function",
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "_questionIndex",
-                    "type": "uint256",
-                },
-                {
-                    "internalType": "enum FutarchyPredictionMarket.Decision",
-                    "name": "_decision",
-                    "type": "uint8",
-                },
-            ],
-            "name": "vote",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function",
-        },
-    ]
+    contract_abi = '[{"inputs":[{"internalType":"string","name":"_question","type":"string"},{"internalType":"uint256","name":"_duration","type":"uint256"}],"name":"createQuestion","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_questionIndex","type":"uint256"}],"name":"determineOutcome","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getQuestionCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"questions","outputs":[{"internalType":"string","name":"text","type":"string"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"enum FutarchyPredictionMarket.Decision","name":"outcome","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_questionIndex","type":"uint256"},{"internalType":"enum FutarchyPredictionMarket.Decision","name":"_decision","type":"uint8"}],"name":"vote","outputs":[],"stateMutability":"nonpayable","type":"function"}]'
 
     # Create contract instance
     contract = w3.eth.contract(address=contract_address, abi=contract_abi)
@@ -106,7 +47,7 @@ def create_question(question, duration):
     # Build transaction to create a new question
     create_question_txn = contract.functions.createQuestion(
         question, duration
-    ).buildTransaction(
+    ).build_transaction(
         {
             "from": deployer_address,
             "nonce": w3.eth.get_transaction_count(deployer_address),
@@ -121,7 +62,7 @@ def create_question(question, duration):
     )
 
     # Send the transaction
-    tx_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
+    tx_hash = w3.eth.send_raw_transaction(signed_txn.raw_transaction)
 
     # Wait for transaction receipt
     tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash)

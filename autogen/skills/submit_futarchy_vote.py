@@ -22,6 +22,7 @@ submit_vote(0, 0)  # Vote "Yes" for the first question
 import os
 from web3 import Web3, HTTPProvider
 from eth_account import Account
+import json
 
 
 def submit_vote(question_index, decision):
@@ -38,67 +39,7 @@ def submit_vote(question_index, decision):
     contract_address = os.getenv("CONTRACT_ADDRESS")
 
     # Load the contract ABI (replace with your actual ABI)
-    contract_abi = [
-        {
-            "inputs": [
-                {"internalType": "string", "name": "_question", "type": "string"},
-                {"internalType": "uint256", "name": "_duration", "type": "uint256"},
-            ],
-            "name": "createQuestion",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function",
-        },
-        {
-            "inputs": [
-                {"internalType": "uint256", "name": "_questionIndex", "type": "uint256"}
-            ],
-            "name": "determineOutcome",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function",
-        },
-        {
-            "inputs": [],
-            "name": "getQuestionCount",
-            "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-            "stateMutability": "view",
-            "type": "function",
-        },
-        {
-            "inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-            "name": "questions",
-            "outputs": [
-                {"internalType": "string", "name": "text", "type": "string"},
-                {"internalType": "uint256", "name": "deadline", "type": "uint256"},
-                {
-                    "internalType": "enum FutarchyPredictionMarket.Decision",
-                    "name": "outcome",
-                    "type": "uint8",
-                },
-            ],
-            "stateMutability": "view",
-            "type": "function",
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "_questionIndex",
-                    "type": "uint256",
-                },
-                {
-                    "internalType": "enum FutarchyPredictionMarket.Decision",
-                    "name": "_decision",
-                    "type": "uint8",
-                },
-            ],
-            "name": "vote",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function",
-        },
-    ]
+    contract_abi = '[{"inputs":[{"internalType":"string","name":"_question","type":"string"},{"internalType":"uint256","name":"_duration","type":"uint256"}],"name":"createQuestion","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_questionIndex","type":"uint256"}],"name":"determineOutcome","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getQuestionCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"questions","outputs":[{"internalType":"string","name":"text","type":"string"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"enum FutarchyPredictionMarket.Decision","name":"outcome","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_questionIndex","type":"uint256"},{"internalType":"enum FutarchyPredictionMarket.Decision","name":"_decision","type":"uint8"}],"name":"vote","outputs":[],"stateMutability":"nonpayable","type":"function"}]'
 
     # Create contract instance
     contract = w3.eth.contract(address=contract_address, abi=contract_abi)
@@ -106,7 +47,7 @@ def submit_vote(question_index, decision):
     # Build transaction to submit a vote
     submit_vote_txn = contract.functions.vote(
         question_index, decision
-    ).buildTransaction(
+    ).build_transaction(
         {
             "from": agent_address,
             "nonce": w3.eth.get_transaction_count(agent_address),
@@ -121,7 +62,7 @@ def submit_vote(question_index, decision):
     )
 
     # Send the transaction
-    tx_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
+    tx_hash = w3.eth.send_raw_transaction(signed_txn.raw_transaction)
 
     # Wait for transaction receipt
     tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
