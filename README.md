@@ -33,6 +33,11 @@ Futarchy.ai has been deployed on multiple blockchain testnets to demonstrate its
 - Contract Address: `0x6D3Db053477f55F1b4EeD1ea68c158546057CeA3`
 - [Link to Aurora Explorer](https://explorer.testnet.aurora.dev/address/0x6D3Db053477f55F1b4EeD1ea68c158546057CeA3)
 
+### Neon Devnet
+
+- Contract Address: `0x8cBd3953dAE124AD9f306b5491d2C7DFb9eb9BcC`
+- [Link to Neon Devnet Explorer](https://devnet.neonscan.org/address/0x8cBd3953dAE124AD9f306b5491d2C7DFb9eb9BcC)
+
 ## Getting Started
 
 To get started with Futarchy.ai, follow these steps:
